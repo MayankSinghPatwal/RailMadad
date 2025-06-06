@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Rail Madad</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+  <!-- Layout -->
+  <div class="flex">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-blue-900 text-white h-screen p-6">
+      <h1 class="text-2xl font-bold mb-8">🚉 Rail Madad Admin</h1>
+      <nav class="space-y-4">
+        <a href="#dashboard" class="block hover:text-yellow-300">Dashboard</a>
+        <a href="#complaints" class="block hover:text-yellow-300">Complaints</a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-8 overflow-y-auto">
+      
+      <!-- Dashboard Summary -->
+      <section id="dashboard" class="mb-10">
+        <h2 class="text-2xl font-semibold mb-4">📊 Overview</h2>
+        <div class="grid grid-cols-3 gap-6">
+          <div class="bg-white p-4 rounded shadow text-center">
+            <h3 class="text-gray-600">Total Complaints</h3>
+            <p class="text-2xl font-bold text-blue-700">128</p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <h3 class="text-gray-600">Resolved</h3>
+            <p class="text-2xl font-bold text-green-600">89</p>
+          </div>
+          <div class="bg-white p-4 rounded shadow text-center">
+            <h3 class="text-gray-600">Pending</h3>
+            <p class="text-2xl font-bold text-red-500">39</p>
+          </div>
+        </div>
+      </section> 
+
+      <!-- Complaints Section -->
+      <section id="complaints">
+        <h2 class="text-2xl font-semibold mb-4">📬 Complaints</h2>
+
+        <!-- Filter -->
+        <div class="mb-6 flex items-center space-x-4">
+          <label for="department" class="font-medium">Filter by Department:</label>
+          <select id="department" class="p-2 border border-gray-300 rounded">
+            <option value="">All</option>
+            <option value="Sanitation">Sanitation</option>
+            <option value="Security">Security</option>
+            <option value="Catering">Catering</option>
+          </select>
+          <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Apply</button>
+        </div>
+
+        <!-- Complaint Cards -->
+        <div id="complaints-list" class="space-y-6"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+<script>
+  async function loadComplaints() {
+  try {
+    const res = await fetch('http://localhost:3000/admin/complaints');
+    const result = await res.json();
+
+    console.log("✅ Fetched complaints:", result);
+
+    const complaints = result.data || [];
+    const container = document.getElementById('complaints-list');
+    container.innerHTML = ''; // Clear previous content
+
+    if (!complaints.length) {
+      container.innerHTML = '<p class="text-red-500">No complaints found.</p>';
+      return;
+    }
+
+    complaints.forEach(c => {
+      const fileExt = c.file_path ? c.file_path.split('.').pop().toLowerCase() : '';
+      const fileUrl = c.file_path ? `http://localhost:3000/uploads/${c.file_path}` : '';
+      let fileDisplay = 'No file attached';
+
+      if (fileUrl) {
+        if (['jpg', 'jpeg', 'png', 'gif', 'bmp'].includes(fileExt)) {
+          fileDisplay = `<img src="${fileUrl}" alt="Image" class="w-40 h-32 object-cover rounded border" />`;
+        } else if (['mp4', 'webm', 'ogg'].includes(fileExt)) {
+          fileDisplay = `<video controls class="w-40 rounded"><source src="${fileUrl}" type="video/${fileExt}"></video>`;
+        } else if (['mp3', 'wav'].includes(fileExt)) {
+          fileDisplay = `<audio controls class="w-40"><source src="${fileUrl}" type="audio/${fileExt}"></audio>`;
+        } else {
+          fileDisplay = `<a href="${fileUrl}" target="_blank" class="text-blue-600 underline text-sm">Download File</a>`;
+        }
+      }
+
+      const card = `
+        <div class="bg-white shadow rounded p-6">
+          <div class="flex justify-between items-center mb-3">
+            <div>
+              <h3 class="font-bold text-lg">Complaint #${c.id}</h3>
+              <p class="text-sm text-gray-600">Filed: ${new Date(c.created_at).toLocaleString()}</p>
+            </div>
+            <span class="px-3 py-1 text-sm rounded-full bg-yellow-100 text-yellow-800">Pending</span>
+          </div>
+
+          <p><strong>Mobile:</strong> ${c.mobile_number}</p>
+          <p><strong>PNR:</strong> ${c.pnr_number || 'N/A'}</p>
+          <p><strong>Station:</strong> ${c.recent_station || 'N/A'}</p>
+          <p class="my-2 text-gray-800"><strong>Description:</strong> ${c.description}</p>
+
+          <div class="mt-3 space-y-2">${fileDisplay}</div>
+
+          <div class="mt-4 flex items-center space-x-4">
+            <label class="font-medium">Update Status:</label>
+            <select class="p-2 border rounded">
+              <option>Pending</option>
+              <option>In Progress</option>
+              <option>Resolved</option>
+            </select>
+            <button class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Save</button>
+          </div>
+
+          <div class="mt-3">
+            <label class="block font-medium mb-1">Admin Remark:</label>
+            <textarea class="w-full p-2 border rounded" placeholder="Enter your remark..."></textarea>
+            <button class="mt-2 px-4 py-1 bg-gray-700 text-white rounded hover:bg-gray-800">Add Remark</button>
+          </div>
+        </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', card);
+    });
+
+  } catch (err) {
+    console.error("❌ Failed to load complaints:", err);
+    const container = document.getElementById('complaints-list');
+    container.innerHTML = '<p class="text-red-500">Error loading complaints. See console.</p>';
+  }
+}
+
+// Call function on page load
+window.addEventListener('DOMContentLoaded', loadComplaints);
+
+//to be checked not final code
+let fileHtml = '';
+
+if (c.file_path) {
+  const fileUrl = `http://localhost:3000/uploads/${c.file_path}`;
+  const ext = c.file_path.split('.').pop().toLowerCase();
+
+  if (['jpg', 'jpeg', 'png', 'gif'].includes(ext)) {
+    fileHtml = `<img src="${fileUrl}" alt="Image" class="w-40 rounded border mt-2" />`;
+  } else if (['mp4', 'webm'].includes(ext)) {
+    fileHtml = `<video controls class="w-40 mt-2"><source src="${fileUrl}" type="video/${ext}" /></video>`;
+  } else if (['mp3', 'wav'].includes(ext)) {
+    fileHtml = `<audio controls class="w-40 mt-2"><source src="${fileUrl}" type="audio/${ext}" /></audio>`;
+  } else {
+    fileHtml = `<a href="${fileUrl}" target="_blank" class="text-blue-600 underline">Download File</a>`;
+  }
+}
+
+</script>
+</body>
+</html>
