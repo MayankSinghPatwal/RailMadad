@@ -89,3 +89,22 @@ app.get('/admin/complaints', (req, res) => {
     res.json({ success: true, data: results });
   });
 });
+
+
+//feedback
+app.post('/submit-feedback', (req, res) => {
+  const { mobile, otp, pnr, rating, feedbackText } = req.body;
+
+  const sql = `
+    INSERT INTO feedback (mobile_number, otp, pnr_number, rating, message)
+    VALUES (?, ?, ?, ?, ?)
+  `;
+
+  db.query(sql, [mobile, otp, pnr, rating, feedbackText], (err, result) => {
+    if (err) {
+      console.error('❌ Feedback insert error:', err);
+      return res.status(500).json({ success: false, message: 'Failed to submit feedback' });
+    }
+    res.json({ success: true, message: '✅ Feedback submitted successfully!' });
+  });
+});
