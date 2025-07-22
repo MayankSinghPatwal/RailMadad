@@ -12,17 +12,17 @@ First, open your MySQL client (CLI or GUI like MySQL Workbench) and create a dat
 ## 📸 Screenshots
 
 ### 🏠 Home Page
-![Home Page](./home.png)
+![Home Page](./assets-for-readme/home.png)
 
 ### 📝 File a Complaint
-![File a Complaint](./fileacomplaint.png)
+![File a Complaint](./assets-for-readme/fileacomplaint.png)
 
 ### 📍 Track Complaint
-![Track Complaint](./track.png)
+![Track Complaint](./assets-for-readme/track.png)
 
 ### 🧑‍💻 Admin Portal
-![Admin Portal](./adminportal.png)
+![Admin Portal](./assets-for-readme/adminportal.png)
 
 ### ⭐ Feedback Section
-![Feedback](./Feedback.png)
+![Feedback](./assets-for-readme/Feedback.png)
 
