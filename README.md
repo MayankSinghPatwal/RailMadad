@@ -9,3 +9,20 @@ To run the backend, first open your terminal and navigate to the railmadad-backe
 ✅ MySQL Database Setup
 First, open your MySQL client (CLI or GUI like MySQL Workbench) and create a database named railmadad. Inside this database, create two tables named complaints and feedback. These names are case-sensitive, so they must match exactly. The complaints table stores user-submitted complaints, while the feedback table records post-resolution feedback. Make sure all the column names also match what's expected in the backend code to avoid any connection or data errors.
 
+## 📸 Screenshots
+
+### 🏠 Home Page
+![Home Page](./home.png)
+
+### 📝 File a Complaint
+![File a Complaint](./fileacomplaint.png)
+
+### 📍 Track Complaint
+![Track Complaint](./track.png)
+
+### 🧑‍💻 Admin Portal
+![Admin Portal](./adminportal.png)
+
+### ⭐ Feedback Section
+![Feedback](./Feedback.png)
+
